@@ -1,0 +1,11 @@
+.DS_Store
+FocusGuard.xcodeproj/
+*/Info.plist
+*/*.entitlements
+xcuserdata/
+DerivedData/
+build/
+.build/
+.swiftpm/
+*.p8
+__pycache__/

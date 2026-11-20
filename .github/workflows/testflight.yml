@@ -1,0 +1,61 @@
+# iPhone で試すための TestFlight 配信（手動実行）。
+# 必要な準備（README の「iPhone で試す」参照）:
+#   - Apple Developer Program への登録
+#   - App Store Connect の API キー（App Manager 以上）を GitHub の Secrets に登録
+#       ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8（.p8 ファイルの中身）
+#   - Secrets の TEAM_ID に Team ID、Variables の APP_BUNDLE_ID / APP_GROUP_ID に本番の値
+#   - Family Controls の「配布用」権限を Apple に申請して承認済みであること（本体と4つの拡張すべて）
+name: testflight
+on:
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write App Store Connect API key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p ~/private_keys
+          printf '%s' "$ASC_KEY_P8" > ~/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
+
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Archive
+        run: |
+          xcodebuild -project FocusGuard.xcodeproj -scheme FocusGuard -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/FocusGuard.xcarchive \
+            DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }} \
+            APP_BUNDLE_ID=${{ vars.APP_BUNDLE_ID }} APP_GROUP_ID=${{ vars.APP_GROUP_ID }} \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.ASC_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }} \
+            archive
+
+      - name: Upload to TestFlight
+        run: |
+          cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>teamID</key><string>${{ secrets.TEAM_ID }}</string>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive -archivePath build/FocusGuard.xcarchive \
+            -exportOptionsPlist ExportOptions.plist -exportPath build/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.ASC_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }}

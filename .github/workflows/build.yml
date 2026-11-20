@@ -1,0 +1,40 @@
+# Windows で書いたコードを、GitHub の macOS マシンでテスト・ビルドする。
+# push するたびに自動で実行される（署名なし・シミュレータ向け。iPhone への配布は testflight.yml）。
+name: build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Foundation Models（オンデバイスAI）を含めてビルドするため Xcode 26 が入った macOS 26 を使う
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Core tests (FocusGuardKit)
+        run: swift test --package-path Packages/FocusGuardKit
+
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build app and extensions (iOS Simulator)
+        run: |
+          xcodebuild -project FocusGuard.xcodeproj -scheme FocusGuard \
+            -destination 'generic/platform=iOS Simulator' -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build | tee build.log | grep -E "error:|warning: unre|BUILD" || true
+          grep -q "BUILD SUCCEEDED" build.log
+
+      - name: Upload build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
