@@ -1,0 +1,11 @@
+{
+  "name": "focus-guard-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Focus Guard（目的を持ってスマホを使うための利用申請アプリ）Web/PWA版",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}

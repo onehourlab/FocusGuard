@@ -2,7 +2,7 @@
 # FocusGuard.xcodeproj が作られる。Bundle ID・App Group・Team はこのファイルだけで変更する。
 name: FocusGuard
 options:
-  bundleIdPrefix: com.example
+  bundleIdPrefix: com.onehourlab
   deploymentTarget:
     iOS: "17.0"
   developmentLanguage: ja
@@ -12,8 +12,8 @@ settings:
   base:
     # ↓ ご自身の値に変更してください
     DEVELOPMENT_TEAM: ""
-    APP_BUNDLE_ID: com.example.focusguard
-    APP_GROUP_ID: group.com.example.focusguard
+    APP_BUNDLE_ID: com.onehourlab.focusguard
+    APP_GROUP_ID: group.com.onehourlab.focusguard
     # ↑ ここまで
     CODE_SIGN_STYLE: Automatic
     SWIFT_VERSION: "5.0"

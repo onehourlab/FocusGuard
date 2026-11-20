@@ -10,6 +10,8 @@
 > Windows で確認できたのは、`scripts/static_check.py` による構文と設定の検査だけです。
 > 型のエラーやテストの失敗は、GitHub Actions（macOS）で初めて分かります（下の「Windows からの開発の流れ」参照）。
 
+> **Web 版（先に試せる版）**：Apple Developer Program に登録しなくても、iPhone の Safari と「ショートカット」アプリで使える版を [web/](web/README.md) に用意しています。
+
 ---
 
 ## 1. iOS の制約と、それに合わせた設計
@@ -97,7 +99,7 @@ Mac が無くても、次の流れで開発できます。
 GitHub Actions の macOS の実行時間は、非公開リポジトリだと無料枠の消費が速い（Linux の10倍で数える）ので、必要なときだけ push するのがおすすめです。
 
 ### iPhone で試す（TestFlight）の準備
-1. Apple Developer Program に登録し、[Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list) で App Group（例：`group.<あなたのドメイン>.focusguard`）を作る
+1. Apple Developer Program に登録し、[Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list) で App Group（例：`group.com.onehourlab.focusguard`）を作る
 2. App Store Connect で新しいアプリを作る（Bundle ID は `project.yml` の `APP_BUNDLE_ID` と同じに）
 3. App Store Connect の「ユーザーとアクセス → 統合 → App Store Connect API」でキーを作る（役割：App Manager）
 4. GitHub リポジトリの Settings → Secrets and variables → Actions に登録：

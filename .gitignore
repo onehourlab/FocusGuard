@@ -9,3 +9,5 @@ build/
 .swiftpm/
 *.p8
 __pycache__/
+node_modules/
+.claude/
