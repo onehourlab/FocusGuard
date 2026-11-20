@@ -111,6 +111,12 @@ public enum ConceptLexicon {
         return found
     }
 
+    /// 話題の種類：手段（何で）と、相手・内容（誰と・何について）
+    static let topicGroups: [Set<String>] = [
+        ["message", "video", "photo"],
+        ["friend", "family", "study", "work", "news", "relax", "event"]
+    ]
+
     /// 行動そのものに区切りがある（返信・検索・購入など）か
     static let boundedActions: Set<String> = ["reply", "search", "check", "post", "buy", "navigate"]
 
@@ -159,6 +165,17 @@ public enum PurposeMatcher {
         // 両方に「何をするか」があり、まったく違う行動なら別の目的
         if !actionsA.isEmpty && !actionsB.isEmpty && actionsA.isDisjoint(with: actionsB) {
             return min(textScore, 0.3)
+        }
+        // 同じ行動なら、話題は「手段（DM・動画など）」と「相手・内容（友人・学習など）」を別々に比べ、
+        // 同じ種類の話題が食い違うときだけ減点する（「DMを返す」と「友達に返信」は同じ目的）
+        if !actionsA.isEmpty && !actionsA.isDisjoint(with: actionsB) {
+            var score = 1.0
+            for group in ConceptLexicon.topicGroups {
+                let ta = Set(ca.map(\.id)).intersection(group)
+                let tb = Set(cb.map(\.id)).intersection(group)
+                if !ta.isEmpty && !tb.isEmpty && ta.isDisjoint(with: tb) { score -= 0.45 }
+            }
+            return max(score * 0.85 + textScore * 0.15, textScore)
         }
         let shared = ca.intersection(cb).reduce(0) { $0 + $1.weight }
         let smaller = min(ca.reduce(0) { $0 + $1.weight }, cb.reduce(0) { $0 + $1.weight })

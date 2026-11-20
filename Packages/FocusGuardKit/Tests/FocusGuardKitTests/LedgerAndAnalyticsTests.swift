@@ -31,6 +31,7 @@ final class LedgerAndAnalyticsTests: XCTestCase {
     func testDifferentPurposesDoNotMatch() {
         XCTAssertLessThan(PurposeMatcher.similarity("友達のDMに返信する", "授業の動画を見る"), PurposeMatcher.sameThreshold)
         XCTAssertLessThan(PurposeMatcher.similarity("ストーリーを眺める", "コンサートのチケットを予約する"), PurposeMatcher.sameThreshold)
+        XCTAssertLessThan(PurposeMatcher.similarity("友達にDM返信", "家族にDM返信"), PurposeMatcher.sameThreshold, "相手が違えば別の目的")
     }
 
     func testNormalizationIgnoresWidthAndKana() {
