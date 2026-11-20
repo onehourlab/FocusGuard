@@ -1,5 +1,5 @@
 // 一度開けば電波が無くても表示できるようにする（緊急解除も通信なしで使える）
-const CACHE = 'focusguard-v1';
+const CACHE = 'focusguard-v2';
 const FILES = ['./', './index.html', './src/app.js', './src/engine.js', './src/store.js', './src/styles.css',
   './manifest.webmanifest', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];
 
