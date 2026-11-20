@@ -507,12 +507,12 @@ function setupPage() {
       <li>「ショートカットの入力」を受け取る設定にする：画面下の「i」→「共有シートに表示」はオフのままでよい。最初のアクションに「<strong>テキストを分割</strong>」を追加し、入力を「ショートカットの入力」、区切りを「カスタム」で <code>|</code> にする。</li>
       <li>「<strong>リストから項目を取得</strong>」を追加し「最初の項目」にする（＝アプリの識別名）。</li>
       <li>「<strong>テキスト</strong>」を追加して <code>ok</code> と入力。</li>
-      <li>「<strong>ファイルを保存</strong>」を追加：保存するもの＝上のテキスト、「保存先を尋ねる」をオフ、保存先＝ <code>Shortcuts/FocusGuard/</code>（識別名）<code>.txt</code>、「上書き」をオン。</li>
+      <li>「<strong>ファイルを保存</strong>」を追加：保存するもの＝上のテキスト、「保存先を尋ねる」をオフ、保存先は「Shortcuts」、サブパス＝ <code>/</code>（識別名＝リストからの項目）<code>.txt</code>、「上書き」をオン。</li>
       <li>「<strong>リストから項目を取得</strong>」で、手順2の「分割されたテキスト」の「最後の項目」を取り出す（＝アプリを開くURL）。</li>
       <li>「<strong>URLを開く</strong>」を追加し、上の項目を開く。</li></ol>`)
     + card('手順2：アプリごとの自動化を作る', `<ol class="steps">
       <li>「ショートカット」アプリ下の「オートメーション」→「＋」→「<strong>App</strong>」を選び、制限したいアプリを1つ選ぶ。「開いている」にチェック、「<strong>すぐに実行</strong>」を選ぶ。</li>
-      <li>「<strong>ファイルを取得</strong>」を追加：<code>Shortcuts/FocusGuard/</code>（識別名）<code>.txt</code>、「見つからない場合はエラー」をオフ。</li>
+      <li>「<strong>ファイルを取得</strong>」を追加：「Shortcuts」フォルダの <code>/</code>（識別名）<code>.txt</code>（例：<code>/instagram.txt</code>）、「見つからない場合はエラー」をオフ。</li>
       <li>「<strong>if</strong>」を追加：条件「ファイル」が「<strong>任意の値がある</strong>」。</li>
       <li>if の中（値があるとき）に「<strong>ファイルを削除</strong>」（削除の前に確認：オフ）＝1回だけ通す。</li>
       <li>「その他の場合」の中に「<strong>URLを開く</strong>」で、下の各アプリ用のURLを入れる。</li></ol>
