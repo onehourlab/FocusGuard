@@ -1,5 +1,6 @@
 # Windows で書いたコードを、GitHub の macOS マシンでテスト・ビルドする。
 # push するたびに自動で実行される（署名なし・シミュレータ向け。iPhone への配布は testflight.yml）。
+# 失敗した箇所は scripts/ci_annotate.sh が「注釈」として Actions の画面に出す。
 name: build
 on:
   push:
@@ -15,26 +16,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Xcode version
-        run: xcodebuild -version
+        run: echo "::notice::$(xcodebuild -version | tr '\n' ' ') / $(swift --version 2>&1 | head -1)"
 
       - name: Core tests (FocusGuardKit)
-        run: swift test --package-path Packages/FocusGuardKit
+        run: bash scripts/ci_annotate.sh test.log swift test --package-path Packages/FocusGuardKit
 
       - name: Generate Xcode project
+        if: success() || failure()
         run: |
           brew install xcodegen
           xcodegen generate
 
       - name: Build app and extensions (iOS Simulator)
+        if: success() || failure()
         run: |
-          xcodebuild -project FocusGuard.xcodeproj -scheme FocusGuard \
+          bash scripts/ci_annotate.sh build.log xcodebuild -project FocusGuard.xcodeproj -scheme FocusGuard \
             -destination 'generic/platform=iOS Simulator' -configuration Debug \
-            CODE_SIGNING_ALLOWED=NO build | tee build.log | grep -E "error:|warning: unre|BUILD" || true
-          grep -q "BUILD SUCCEEDED" build.log
+            CODE_SIGNING_ALLOWED=NO -quiet build
 
-      - name: Upload build log
+      - name: Upload logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: build.log
+          name: logs
+          path: "*.log"
